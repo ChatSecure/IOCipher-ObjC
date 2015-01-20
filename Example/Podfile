@@ -1,0 +1,8 @@
+source 'https://github.com/CocoaPods/Specs.git'
+
+
+target 'IOCipher', :exclusive => true do
+  pod "IOCipher", :path => "../"
+
+  
+end
