@@ -3,6 +3,5 @@ source 'https://github.com/CocoaPods/Specs.git'
 
 target 'IOCipher', :exclusive => true do
   pod "IOCipher", :path => "../"
-
-  
+  pod "libsqlfs/SQLCipher", :podspec => "./Podspecs/libsqlfs.podspec"
 end
