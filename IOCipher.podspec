@@ -12,12 +12,21 @@ Pod::Spec.new do |s|
   s.osx.deployment_target = '10.8'
   s.requires_arc = true
 
-  s.source_files = 'Pod/Classes'
-  s.resource_bundles = {
-    'IOCipher' => ['Pod/Assets/*.png']
-  }
+  s.default_subspec = 'standard'
 
-  s.xcconfig = { 'OTHER_CFLAGS' => '$(inherited) -DHAVE_LIBSQLCIPHER -DSQLITE_HAS_CODEC' }
+  s.subspec 'common' do |ss|
+    ss.source_files = 'IOCipher/*.{h,m}'
+    ss.xcconfig = { 'OTHER_CFLAGS' => '$(inherited) -DHAVE_LIBSQLCIPHER -DSQLITE_HAS_CODEC' }
+    ss.dependency 'libsqlfs/SQLCipher'
+  end
 
-  s.dependency 'libsqlfs/SQLCipher'
+  s.subspec 'standard' do |ss|
+    ss.dependency 'IOCipher/common'
+  end
+
+  s.subspec 'GCDWebServer' do |ss|
+    ss.source_files = 'IOCipher/GCDWebServer/*.{h,m}'
+    ss.dependency 'IOCipher/common'
+    ss.dependency 'GCDWebServer'
+  end
 end

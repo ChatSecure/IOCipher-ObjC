@@ -100,5 +100,41 @@
     XCTAssertEqualObjects(fileData, readData);
 }
 
+- (void) testFileAttributes {
+    NSString *filePath = @"file.txt";
+    NSData *fileData = [@"test" dataUsingEncoding:NSUTF8StringEncoding];
+    NSError *error = nil;
+    BOOL success = [self.ioCipher createFileAtPath:filePath error:&error];
+    XCTAssertTrue(success, @"error: %@", error);
+    NSUInteger bytesWritten = [self.ioCipher writeDataToFileAtPath:filePath data:fileData offset:0 error:&error];
+    XCTAssert(bytesWritten == fileData.length, @"error: %@", error);
+    NSDictionary *fileAttributes = [self.ioCipher fileAttributesAtPath:filePath error:&error];
+    XCTAssertNotNil(fileAttributes, @"error: %@", error);
+    NSNumber *fileSize = fileAttributes[NSFileSize];
+    NSDate *dateModified = fileAttributes[NSFileModificationDate];
+    XCTAssert(fileSize.unsignedIntegerValue == fileData.length, @"File size doesn't match");
+    XCTAssertNotNil(dateModified);
+}
+
+- (void) testTruncateFile {
+    NSString *filePath = @"file.txt";
+    NSData *fileData = [@"test" dataUsingEncoding:NSUTF8StringEncoding];
+    NSError *error = nil;
+    BOOL success = [self.ioCipher createFileAtPath:filePath error:&error];
+    XCTAssertTrue(success, @"error: %@", error);
+    NSUInteger bytesWritten = [self.ioCipher writeDataToFileAtPath:filePath data:fileData offset:0 error:&error];
+    XCTAssert(bytesWritten == fileData.length, @"error: %@", error);
+    
+    NSUInteger newFileLength = 3;
+    success = [self.ioCipher truncateFileAtPath:filePath length:newFileLength error:&error];
+    
+    XCTAssertTrue(success, @"error: %@", error);
+    
+    NSDictionary *fileAttributes = [self.ioCipher fileAttributesAtPath:filePath error:&error];
+    XCTAssertNotNil(fileAttributes, @"error: %@", error);
+    NSNumber *fileSize = fileAttributes[NSFileSize];
+    XCTAssert(fileSize.unsignedIntegerValue == newFileLength, @"New file size doesn't match");
+}
+
 
 @end
