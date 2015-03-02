@@ -94,4 +94,10 @@
                      length:(NSUInteger)length
                       error:(NSError**)error;
 
+- (void) copyItemAtFileSystemPath:(NSString *)fileSystemPath
+                  toEncryptedPath:(NSString *)encryptedPath
+                  completionQueue:(dispatch_queue_t) completionQueue
+                       completion:(void (^)(NSInteger, NSError *))completion;
+
+
 @end

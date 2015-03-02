@@ -8,6 +8,7 @@
 
 #import "IOCipher.h"
 #import "sqlfs.h"
+#import "IOFileCopier.h"
 
 /** Switches sign on sqlfs result codes */
 static inline NSError* IOCipherPOSIXError(int code) {
@@ -16,6 +17,10 @@ static inline NSError* IOCipherPOSIXError(int code) {
 
 @interface IOCipher()
 @property (nonatomic, readonly) sqlfs_t *sqlfs;
+
+@property (nonatomic) dispatch_queue_t isolationQueue;
+@property (nonatomic, strong) NSMutableDictionary *fileCopierDictionary;
+
 @end
 
 @implementation IOCipher
@@ -39,6 +44,7 @@ static inline NSError* IOCipherPOSIXError(int code) {
         if (!_sqlfs) {
             return nil;
         }
+        [self commonInit];
     }
     return self;
 }
@@ -55,8 +61,15 @@ static inline NSError* IOCipherPOSIXError(int code) {
         if (!_sqlfs) {
             return nil;
         }
+        [self commonInit];
     }
     return self;
+}
+
+/** Sets up self for all init methods */
+- (void)commonInit
+{
+    self.isolationQueue = dispatch_queue_create("IOCIPHER.ISOLATION.QUEUE", 0);
 }
 
 /** Creates file at path */
@@ -259,6 +272,64 @@ static inline NSError* IOCipherPOSIXError(int code) {
         return NO;
     }
     return YES;
+}
+
+#pragma - mark File Copying
+
+- (NSMutableDictionary *)fileCopierDictionary
+{
+    if (!_fileCopierDictionary) {
+        _fileCopierDictionary = [[NSMutableDictionary alloc] init];
+    }
+    return _fileCopierDictionary;
+}
+
+- (void)setFileCopier:(IOFileCopier *)fileCopier forEncryptedFilePath:(NSString *)encryptedFilePath
+{
+    if (encryptedFilePath) {
+        dispatch_async(self.isolationQueue, ^{
+            if (fileCopier) {
+                [self.fileCopierDictionary setObject:fileCopier forKey:encryptedFilePath];
+            } else {
+                [self.fileCopierDictionary removeObjectForKey:encryptedFilePath];
+            }
+            
+        });
+    }
+}
+
+
+- (void)copyItemAtFileSystemPath:(NSString *)fileSystemPath toEncryptedPath:(NSString *)encryptedPath completionQueue:(dispatch_queue_t)completionQueue completion:(void (^)(NSInteger, NSError *))completion
+{
+    if (!completion) {
+        return;
+    }
+    
+    if (!completionQueue) {
+        completionQueue = dispatch_get_main_queue();
+    }
+    
+    __weak typeof(self)weakSelf = self;
+    __block IOFileCopier *fileCopier = [[IOFileCopier alloc] initWithFilePath:fileSystemPath toEncryptedPath:encryptedPath ioCipher:self completionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0) completion:^(NSInteger bytesWritten, NSError *error) {
+        
+        __strong typeof(weakSelf)strongSelf = weakSelf;
+        
+        dispatch_async(completionQueue, ^{
+            completion(bytesWritten, error);
+        });
+        
+        [strongSelf setFileCopier:nil forEncryptedFilePath:fileCopier.encryptedFilePath];
+        
+        
+    }];
+    
+    [self setFileCopier:fileCopier forEncryptedFilePath:fileCopier.encryptedFilePath];
+    [fileCopier start];
+    
+}
+
+- (NSString *)description {
+    return [NSString stringWithFormat:@"%@\nOngoing Copy Operations: %lu",[super description],(unsigned long)[[self.fileCopierDictionary allKeys] count]];
 }
 
 

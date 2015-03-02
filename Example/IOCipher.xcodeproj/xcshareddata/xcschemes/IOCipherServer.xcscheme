@@ -20,20 +20,6 @@
                ReferencedContainer = "container:IOCipher.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D9111DCC1A71B9C2004AFD08"
-               BuildableName = "IOCipherServerTests.xctest"
-               BlueprintName = "IOCipherServerTests"
-               ReferencedContainer = "container:IOCipher.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -46,9 +32,9 @@
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "D9111DCC1A71B9C2004AFD08"
-               BuildableName = "IOCipherServerTests.xctest"
-               BlueprintName = "IOCipherServerTests"
+               BlueprintIdentifier = "6003F5AD195388D20070C39A"
+               BuildableName = "IOCipherTests.xctest"
+               BlueprintName = "IOCipherTests"
                ReferencedContainer = "container:IOCipher.xcodeproj">
             </BuildableReference>
          </TestableReference>
