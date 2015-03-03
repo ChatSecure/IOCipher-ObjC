@@ -1,6 +1,6 @@
 # [IOCipher-ObjC](https://github.com/ChatSecure/IOCipher-ObjC)
 
-[![CI Status](http://img.shields.io/travis/Chris Ballinger/IOCipher.svg?style=flat)](https://travis-ci.org/ChatSecure/IOCipher-ObjC)
+[![Build Status](https://travis-ci.org/ChatSecure/IOCipher-ObjC.svg?branch=file-copy)](https://travis-ci.org/ChatSecure/IOCipher-ObjC)
 [![Version](https://img.shields.io/cocoapods/v/IOCipher.svg?style=flat)](http://cocoadocs.org/docsets/IOCipher)
 [![License](https://img.shields.io/cocoapods/l/IOCipher.svg?style=flat)](http://cocoadocs.org/docsets/IOCipher)
 [![Platform](https://img.shields.io/cocoapods/p/IOCipher.svg?style=flat)](http://cocoadocs.org/docsets/IOCipher)
