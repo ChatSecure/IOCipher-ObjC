@@ -19,19 +19,31 @@
 - (NSString *) applicationDocumentsDirectory
 {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *basePath = ([paths count] > 0) ? [paths objectAtIndex:0] : nil;
-    return basePath;
+    NSString *documentsPath = [paths firstObject];
+    return documentsPath;
 }
 
 - (NSString*) dbPath {
     NSString *path = [[self applicationDocumentsDirectory] stringByAppendingPathComponent:@"test.sqlite"];
+    NSLog(@"%@",path);
     return path;
+}
+
+- (void)removeAllFilesInDirectory:(NSString *)directory
+{
+    NSDirectoryEnumerator *enumerator = [[NSFileManager defaultManager] enumeratorAtPath:directory];
+    NSString *file = nil;
+    while (file = [enumerator nextObject]) {
+        [[NSFileManager defaultManager] removeItemAtPath:[directory stringByAppendingPathComponent:file] error:nil];
+    }
 }
 
 - (void)setUp {
     [super setUp];
-    // Put setup code here. This method is called before the invocation of each test method in the class.
+    
     NSString *path = [self dbPath];
+    [self removeAllFilesInDirectory:[path stringByDeletingLastPathComponent]];
+    
     self.ioCipher = [[IOCipher alloc] initWithPath:path password:@"test"];
 }
 
@@ -39,7 +51,7 @@
     // Put teardown code here. This method is called after the invocation of each test method in the class.
     [super tearDown];
     self.ioCipher = nil;
-    [[NSFileManager defaultManager] removeItemAtPath:[self dbPath] error:nil];
+    [self removeAllFilesInDirectory:[[self dbPath] stringByDeletingLastPathComponent]];
 }
 
 - (void)testCreateFile {
