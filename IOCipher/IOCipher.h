@@ -103,10 +103,9 @@
  *  @param completionQueue  queue on which the completion block will be called. Defaults to main queue.
  *  @param completion       block to be called when complete
  */
-- (void) copyItemAtFileSystemPath:(NSString *)fileSystemPath
+- (BOOL) copyItemAtFileSystemPath:(NSString *)fileSystemPath
                   toEncryptedPath:(NSString *)encryptedPath
-                  completionQueue:(dispatch_queue_t) completionQueue
-                       completion:(void (^)(NSInteger, NSError *))completion;
+                            error:(NSError **)error;
 
 
 @end

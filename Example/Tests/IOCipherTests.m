@@ -178,36 +178,23 @@
     
     NSString *encryptedPath = @"/test/random";
     
-    XCTestExpectation *testExpectation = [self expectationWithDescription:@"TestFileSystemCopy"];
-    [self.ioCipher copyItemAtFileSystemPath:path toEncryptedPath:encryptedPath completionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0) completion:^(NSInteger bytesWritten, NSError *error) {
-        
-        XCTAssertNil(error,@"Error copying file");
-        XCTAssertEqual(size, bytesWritten, @"Bytes written not equal to size");
-        
-        NSData *originalData = [[NSFileManager defaultManager] contentsAtPath:path];
-        NSDictionary *attributes = [self.ioCipher fileAttributesAtPath:encryptedPath error:&error];
-        XCTAssertNil(error,@"Error getting file attributes");
-        XCTAssertGreaterThan([[attributes allKeys] count], 0, @"No attributes retrieved");
-        NSNumber *fileSize = attributes[NSFileSize];
-        NSData *encryptedData = [self.ioCipher readDataFromFileAtPath:encryptedPath length:fileSize.unsignedIntegerValue offset:0 error:&error];
-        XCTAssertNil(error,@"Error getting encrypted data");
-        XCTAssertNotNil(encryptedData,@"No encrypted file data");
-        XCTAssertNotNil(originalData,@"No original file data");
-        
-        XCTAssertTrue([originalData isEqualToData:encryptedData], @"Data not the same");
-        
-        [testExpectation fulfill];
-    }];
+    NSError *error = nil;
+    BOOL succes = [self.ioCipher copyItemAtFileSystemPath:path toEncryptedPath:encryptedPath error:&error];
     
-    [self waitForExpectationsWithTimeout:20 handler:^(NSError *error) {
-        if (error) {
-            NSLog(@"Timeout Error");
-        }
-        
-        if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
-            [[NSFileManager defaultManager] removeItemAtPath:path error:nil];
-        }
-    }];
+    XCTAssertNil(error,@"Error copying file");
+    XCTAssertTrue(succes, @"Error unable to copy");
+    
+    NSData *originalData = [[NSFileManager defaultManager] contentsAtPath:path];
+    NSDictionary *attributes = [self.ioCipher fileAttributesAtPath:encryptedPath error:&error];
+    XCTAssertNil(error,@"Error getting file attributes");
+    XCTAssertGreaterThan([[attributes allKeys] count], 0, @"No attributes retrieved");
+    NSNumber *fileSize = attributes[NSFileSize];
+    NSData *encryptedData = [self.ioCipher readDataFromFileAtPath:encryptedPath length:fileSize.unsignedIntegerValue offset:0 error:&error];
+    XCTAssertNil(error,@"Error getting encrypted data");
+    XCTAssertNotNil(encryptedData,@"No encrypted file data");
+    XCTAssertNotNil(originalData,@"No original file data");
+    
+    XCTAssertTrue([originalData isEqualToData:encryptedData], @"Data not the same");
 }
 
 
