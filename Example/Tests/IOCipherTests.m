@@ -25,7 +25,6 @@
 
 - (NSString*) dbPath {
     NSString *path = [[self applicationDocumentsDirectory] stringByAppendingPathComponent:@"test.sqlite"];
-    NSLog(@"%@",path);
     return path;
 }
 
@@ -43,6 +42,11 @@
     
     NSString *path = [self dbPath];
     [self removeAllFilesInDirectory:[path stringByDeletingLastPathComponent]];
+    BOOL isDirectory = NO;
+    NSString *directory = [path stringByDeletingLastPathComponent];
+    BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:directory isDirectory:&isDirectory];
+    XCTAssertTrue(exists,@"Directory does not exist: %@",directory);
+    XCTAssertTrue(isDirectory,@"Directory is not directory");
     
     self.ioCipher = [[IOCipher alloc] initWithPath:path password:@"test"];
 }
@@ -52,6 +56,16 @@
     [super tearDown];
     self.ioCipher = nil;
     [self removeAllFilesInDirectory:[[self dbPath] stringByDeletingLastPathComponent]];
+}
+
+- (void)testWriteToDocuments
+{
+    NSString *path = [[[self dbPath] stringByDeletingLastPathComponent] stringByAppendingPathComponent:@"test.txt"];
+    NSData *data = [@"test" dataUsingEncoding:NSUTF8StringEncoding];
+    
+    [[NSFileManager defaultManager] createFileAtPath:path contents:data attributes:nil];
+    NSData *newData = [[NSFileManager defaultManager] contentsAtPath:path];
+    XCTAssertTrue([data isEqualToData:newData]);
 }
 
 - (void)testCreateFile {
