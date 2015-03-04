@@ -196,6 +196,21 @@
     
     XCTAssertTrue([originalData isEqualToData:encryptedData], @"Data not the same");
 }
+- (void) testReadFile {
+    NSString *filePath = @"file.txt";
+    NSData *fileData = [@"test" dataUsingEncoding:NSUTF8StringEncoding];
+    NSError *error = nil;
+    BOOL success = [self.ioCipher createFileAtPath:filePath error:&error];
+    XCTAssertTrue(success, @"error: %@", error);
+    NSUInteger bytesWritten = [self.ioCipher writeDataToFileAtPath:filePath data:fileData offset:0 error:&error];
+    XCTAssertNil(error, @"Error writing file");
+    XCTAssert(bytesWritten == fileData.length, @"error: %@", error);
+    
+    NSError *readError = nil;
+    NSData *readData = [self.ioCipher readDataFromFileAtPath:filePath error:&readError];
+    XCTAssertNil(readError, @"Error reading Data");
+    XCTAssertTrue([readData isEqualToData:fileData], @"File data is not equal");
+}
 
 
 @end

@@ -51,6 +51,9 @@
 
 @interface IOCipher (FileData)
 
+- (NSData*) readDataFromFileAtPath:(NSString *)path
+                         error:(NSError**)error;
+
 /**
  *  Reads data from file at path.
  *
