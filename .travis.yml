@@ -14,5 +14,6 @@ xcode_workspace: Example/IOCipher.xcworkspace
 xcode_scheme: IOCipherTests
 podfile: Example/Podfile
 script:
-- xctool -workspace Example/IOCipher.xcworkspace -scheme IOCipherTests -sdk iphonesimulator -arch i386 test
 - pod lib lint --quick
+- xctool -workspace Example/IOCipher.xcworkspace -scheme IOCipherTests -sdk iphonesimulator -arch i386 test
+
