@@ -160,6 +160,42 @@
     XCTAssert(fileSize.unsignedIntegerValue == newFileLength, @"New file size doesn't match");
 }
 
+- (void) testFileSystemCopy {
+    
+    __block NSUInteger size = 20000000;
+    NSMutableData* data = [NSMutableData dataWithCapacity:size];
+    for (NSUInteger index = 0; index < size/4; index++) {
+        u_int32_t randomBits = arc4random();
+        [data appendBytes:(void*)&randomBits length:4];
+    }
+    
+    XCTAssert([data length] > 0);
+    
+    NSString *path = [[self applicationDocumentsDirectory] stringByAppendingPathComponent:@"random"];
+    BOOL createdFile = [[NSFileManager defaultManager] createFileAtPath:path contents:data attributes:nil];
+    
+    XCTAssertTrue(createdFile, @"Unable to create file in documents path");
+    
+    NSString *encryptedPath = @"/test/random";
+    
+    NSError *error = nil;
+    BOOL succes = [self.ioCipher copyItemAtFileSystemPath:path toEncryptedPath:encryptedPath error:&error];
+    
+    XCTAssertNil(error,@"Error copying file");
+    XCTAssertTrue(succes, @"Error unable to copy");
+    
+    NSData *originalData = [[NSFileManager defaultManager] contentsAtPath:path];
+    NSDictionary *attributes = [self.ioCipher fileAttributesAtPath:encryptedPath error:&error];
+    XCTAssertNil(error,@"Error getting file attributes");
+    XCTAssertGreaterThan([[attributes allKeys] count], 0, @"No attributes retrieved");
+    NSNumber *fileSize = attributes[NSFileSize];
+    NSData *encryptedData = [self.ioCipher readDataFromFileAtPath:encryptedPath length:fileSize.unsignedIntegerValue offset:0 error:&error];
+    XCTAssertNil(error,@"Error getting encrypted data");
+    XCTAssertNotNil(encryptedData,@"No encrypted file data");
+    XCTAssertNotNil(originalData,@"No original file data");
+    
+    XCTAssertTrue([originalData isEqualToData:encryptedData], @"Data not the same");
+}
 - (void) testReadFile {
     NSString *filePath = @"file.txt";
     NSData *fileData = [@"test" dataUsingEncoding:NSUTF8StringEncoding];

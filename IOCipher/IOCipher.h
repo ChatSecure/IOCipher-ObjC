@@ -97,4 +97,18 @@
                      length:(NSUInteger)length
                       error:(NSError**)error;
 
+
+/**
+ *  Asynchronously copy file from file system to encrypted storage
+ *
+ *  @param fileSystemPath   file path of the normal file system
+ *  @param encryptedPath    file path in encrypted store
+ *  @param completionQueue  queue on which the completion block will be called. Defaults to main queue.
+ *  @param completion       block to be called when complete
+ */
+- (BOOL) copyItemAtFileSystemPath:(NSString *)fileSystemPath
+                  toEncryptedPath:(NSString *)encryptedPath
+                            error:(NSError **)error;
+
+
 @end

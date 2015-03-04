@@ -272,5 +272,39 @@ static inline NSError* IOCipherPOSIXError(int code) {
     return YES;
 }
 
+#pragma - mark File Copying
+
+
+- (BOOL)copyItemAtFileSystemPath:(NSString *)fileSystemPath toEncryptedPath:(NSString *)encryptedPath error:(NSError *__autoreleasing *)error
+{
+    
+    NSInputStream *inputStream = [[NSInputStream alloc] initWithFileAtPath:fileSystemPath];
+    [inputStream open];
+    
+    NSUInteger bytesWritten = 0;
+    
+    BOOL success = YES;
+    while (inputStream.hasBytesAvailable && success) {
+        int bufferLength = 4096;
+        uint8_t buf[bufferLength];
+        NSInteger length = 0;
+        length = [inputStream read:buf maxLength:bufferLength];
+        if(length) {
+            NSData *data = [NSData dataWithBytes:(const void *)buf length:length];
+            NSUInteger wroteBytes = [self writeDataToFileAtPath:encryptedPath
+                                            data:data
+                                          offset:bytesWritten
+                                           error:error];
+            if (wroteBytes > 0 && !*error) {
+                bytesWritten += wroteBytes;
+            }
+            else {
+                success = NO;
+            }
+        }
+    }
+    return success;
+}
+
 
 @end
