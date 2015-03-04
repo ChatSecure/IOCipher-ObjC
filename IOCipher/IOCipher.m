@@ -155,6 +155,17 @@ static inline NSError* IOCipherPOSIXError(int code) {
     return fileAttributes;
 }
 
+- (NSData*) readDataFromFileAtPath:(NSString *)path
+                         error:(NSError **)error
+{
+    NSDictionary *attributes = [self fileAttributesAtPath:path error:error];
+    if (*error) {
+        return nil;
+    }
+    NSNumber *fileSize = attributes[NSFileSize];
+    return [self readDataFromFileAtPath:path length:fileSize.unsignedIntegerValue offset:0 error:error];
+}
+
 /**
  *  Reads data from file at path.
  *
