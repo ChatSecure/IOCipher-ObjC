@@ -18,9 +18,7 @@
 
 - (NSString *) applicationDocumentsDirectory
 {
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsPath = [paths firstObject];
-    return documentsPath;
+    return [[NSFileManager defaultManager] currentDirectoryPath];;
 }
 
 - (NSString*) dbPath {
