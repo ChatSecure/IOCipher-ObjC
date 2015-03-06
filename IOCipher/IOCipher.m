@@ -16,6 +16,7 @@ static inline NSError* IOCipherPOSIXError(int code) {
 
 @interface IOCipher()
 @property (nonatomic, readonly) sqlfs_t *sqlfs;
+@property (nonatomic, strong, readonly) NSString *path;
 @end
 
 @implementation IOCipher
@@ -36,6 +37,7 @@ static inline NSError* IOCipherPOSIXError(int code) {
     }
     if (self = [super init]) {
         sqlfs_open_password([path UTF8String], [password UTF8String], &_sqlfs);
+        _path = path;
         if (!_sqlfs) {
             return nil;
         }
@@ -52,11 +54,45 @@ static inline NSError* IOCipherPOSIXError(int code) {
     }
     if (self = [super init]) {
         sqlfs_open_key([path UTF8String], [key bytes], key.length, &_sqlfs);
+        _path = path;
         if (!_sqlfs) {
             return nil;
         }
     }
     return self;
+}
+
+- (BOOL) changePassword:(NSString *)newPassword oldPassword:(NSString *)oldPassword
+{
+    NSParameterAssert(oldPassword != nil);
+    if (sqlfs_close(self.sqlfs)) {
+        _sqlfs = nil;
+        int changeResult = sqlfs_change_password([self.path UTF8String], [oldPassword UTF8String], [newPassword UTF8String]);
+        if (changeResult) {
+            sqlfs_open_password([self.path UTF8String], [newPassword UTF8String], &_sqlfs);
+            if (_sqlfs) {
+                return YES;
+            }
+        }
+    }
+    return NO;
+}
+
+- (BOOL) changeKey:(NSData *)newKey oldKey:(NSData *)oldkey
+{
+    NSAssert(newKey.length == 32, @"key must be 32 bytes");
+    NSParameterAssert(oldkey != nil);
+    if (sqlfs_close(self.sqlfs)) {
+        _sqlfs = nil;
+        int changeResult = sqlfs_rekey([self.path UTF8String], [oldkey bytes], oldkey.length, [newKey bytes], newKey.length);
+        if (changeResult) {
+            sqlfs_open_key([self.path UTF8String], [newKey bytes], newKey.length, &_sqlfs);
+            if (_sqlfs) {
+                return YES;
+            }
+        }
+    }
+    return NO;
 }
 
 /** Creates file at path */
@@ -158,8 +194,12 @@ static inline NSError* IOCipherPOSIXError(int code) {
 - (NSData*) readDataFromFileAtPath:(NSString *)path
                          error:(NSError **)error
 {
-    NSDictionary *attributes = [self fileAttributesAtPath:path error:error];
-    if (*error) {
+    NSError *err = nil;
+    NSDictionary *attributes = [self fileAttributesAtPath:path error:&err];
+    if (err) {
+        if (error) {
+            *error = err;
+        }
         return nil;
     }
     NSNumber *fileSize = attributes[NSFileSize];
