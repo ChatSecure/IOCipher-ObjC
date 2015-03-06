@@ -17,8 +17,26 @@
 /** key should be 32-bytes */
 - (instancetype) initWithPath:(NSString*)path key:(NSData*)key;
 
+/**
+ *  Changes the passwod of the current store. This method closes and reopones the store so no writes or reads can occur.
+ *
+ *
+ *  @param newPassword the new password that will be used after the change
+ *  @param oldPassword the old password that was used previously
+ *
+ *  @return Whether changing the password was successful
+ */
 - (BOOL)changePassword:(NSString *)newPassword oldPassword:(NSString *)oldPassword;
 
+/**
+ *  Changes the key of the current store. This method closes and reopones the store so no writes or reads can occur.
+ *  Keys should be 32-bytes
+ *
+ *  @param newKey the new key that will be used after the change
+ *  @param oldKey the old key that was used previously
+ *
+ *  @return Whether changing the key was successful
+ */
 - (BOOL)changeKey:(NSData *)newKey oldKey:(NSData *)oldkey;
 
 @end

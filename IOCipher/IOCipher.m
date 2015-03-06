@@ -64,6 +64,7 @@ static inline NSError* IOCipherPOSIXError(int code) {
 
 - (BOOL) changePassword:(NSString *)newPassword oldPassword:(NSString *)oldPassword
 {
+    NSParameterAssert(oldPassword != nil);
     if (sqlfs_close(self.sqlfs)) {
         _sqlfs = nil;
         int changeResult = sqlfs_change_password([self.path UTF8String], [oldPassword UTF8String], [newPassword UTF8String]);
@@ -79,6 +80,8 @@ static inline NSError* IOCipherPOSIXError(int code) {
 
 - (BOOL) changeKey:(NSData *)newKey oldKey:(NSData *)oldkey
 {
+    NSAssert(newKey.length == 32, @"key must be 32 bytes");
+    NSParameterAssert(oldkey != nil);
     if (sqlfs_close(self.sqlfs)) {
         _sqlfs = nil;
         int changeResult = sqlfs_rekey([self.path UTF8String], [oldkey bytes], oldkey.length, [newKey bytes], newKey.length);
