@@ -17,6 +17,10 @@
 /** key should be 32-bytes */
 - (instancetype) initWithPath:(NSString*)path key:(NSData*)key;
 
+- (BOOL)changePassword:(NSString *)newPassword oldPassword:(NSString *)oldPassword;
+
+- (BOOL)changeKey:(NSData *)newKey oldKey:(NSData *)oldkey;
+
 @end
 
 @interface IOCipher (FileManagement)

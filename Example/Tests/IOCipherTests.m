@@ -14,6 +14,8 @@
 @property (nonatomic, strong) IOCipher *ioCipher;
 @end
 
+NSString *const IOCipherTestPassword = @"test";
+
 @implementation IOCipherTests
 
 - (NSString *) applicationDocumentsDirectory
@@ -24,6 +26,16 @@
 - (NSString*) dbPath {
     NSString *path = [[self applicationDocumentsDirectory] stringByAppendingPathComponent:@"test.sqlite"];
     return path;
+}
+
+- (NSData *)dataOfLength:(NSUInteger)length
+{
+    NSMutableData* data = [NSMutableData dataWithCapacity:length];
+    for (NSUInteger index = 0; index < length/4; index++) {
+        u_int32_t randomBits = arc4random();
+        [data appendBytes:(void*)&randomBits length:4];
+    }
+    return data;
 }
 
 - (void)removeAllFilesInDirectory:(NSString *)directory
@@ -46,7 +58,7 @@
     XCTAssertTrue(exists,@"Directory does not exist: %@",directory);
     XCTAssertTrue(isDirectory,@"Directory is not directory");
     
-    self.ioCipher = [[IOCipher alloc] initWithPath:path password:@"test"];
+    self.ioCipher = [[IOCipher alloc] initWithPath:path password:IOCipherTestPassword];
 }
 
 - (void)tearDown {
@@ -162,12 +174,7 @@
 
 - (void) testFileSystemCopy {
     
-    __block NSUInteger size = 20000000;
-    NSMutableData* data = [NSMutableData dataWithCapacity:size];
-    for (NSUInteger index = 0; index < size/4; index++) {
-        u_int32_t randomBits = arc4random();
-        [data appendBytes:(void*)&randomBits length:4];
-    }
+    NSData *data = [self dataOfLength:20000000];
     
     XCTAssert([data length] > 0);
     
@@ -210,6 +217,19 @@
     NSData *readData = [self.ioCipher readDataFromFileAtPath:filePath error:&readError];
     XCTAssertNil(readError, @"Error reading Data");
     XCTAssertTrue([readData isEqualToData:fileData], @"File data is not equal");
+}
+
+- (void)testChangePassword
+{
+    NSString *filePath = @"file.txt";
+    NSData *fileData = [@"test" dataUsingEncoding:NSUTF8StringEncoding];
+    [self.ioCipher createFileAtPath:filePath error:nil];
+    [self.ioCipher writeDataToFileAtPath:filePath data:fileData offset:0 error:nil];
+    BOOL changePasswordResult = [self.ioCipher changePassword:@"newPassword" oldPassword:IOCipherTestPassword];
+    XCTAssertTrue(changePasswordResult,@"Unable to change password");
+    NSData *data = [self.ioCipher readDataFromFileAtPath:filePath error:nil];
+    XCTAssertNotNil(data, @"No data found");
+    XCTAssertTrue([data isEqualToData:fileData],@"Data is not equal");
 }
 
 
