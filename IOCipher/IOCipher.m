@@ -7,6 +7,7 @@
 //
 
 #import "IOCipher.h"
+@import SQLCipher;
 #import "sqlfs.h"
 
 /** Switches sign on sqlfs result codes */
