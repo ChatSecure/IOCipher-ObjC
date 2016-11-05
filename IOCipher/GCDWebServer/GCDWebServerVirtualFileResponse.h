@@ -25,7 +25,7 @@
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "GCDWebServerResponse.h"
+#import <GCDWebServer/GCDWebServerResponse.h>
 #import "IOCipher.h"
 
 /**
