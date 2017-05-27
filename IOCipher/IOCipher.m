@@ -17,7 +17,6 @@ static inline NSError* IOCipherPOSIXError(int code) {
 
 @interface IOCipher()
 @property (nonatomic, readonly) sqlfs_t *sqlfs;
-@property (nonatomic, strong, readonly) NSString *path;
 @end
 
 @implementation IOCipher

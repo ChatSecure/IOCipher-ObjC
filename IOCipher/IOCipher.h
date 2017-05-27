@@ -8,14 +8,18 @@
 
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /** Due to limitations of libsqlfs you can only have one instance of this class */
 @interface IOCipher : NSObject
 
-/** password should be UTF-8 */
-- (instancetype) initWithPath:(NSString*)path password:(NSString*)password;
+@property (nonatomic, strong, readonly) NSString *path;
 
-/** key should be 32-bytes */
-- (instancetype) initWithPath:(NSString*)path key:(NSData*)key;
+/** password should be UTF-8 and have non-zero length */
+- (nullable instancetype) initWithPath:(NSString*)path password:(NSString*)password;
+
+/** key should be 32-bytes and have non-zero length */
+- (nullable instancetype) initWithPath:(NSString*)path key:(NSData*)key;
 
 /**
  *  Changes the passwod of the current store. This method closes and reopones the store so no writes or reads can occur.
@@ -37,7 +41,7 @@
  *
  *  @return Whether changing the key was successful
  */
-- (BOOL)changeKey:(NSData *)newKey oldKey:(NSData *)oldkey;
+- (BOOL)changeKey:(NSData *)newKey oldKey:(NSData *)oldKey;
 
 @end
 
@@ -54,7 +58,7 @@
 
 /** Checks if file exists at path */
 - (BOOL) fileExistsAtPath:(NSString *)path
-              isDirectory:(BOOL *)isDirectory;
+              isDirectory:(BOOL * _Nullable)isDirectory;
 
 /**
  *  Returns NSDictionary of file attributes similar to NSFileManager
@@ -67,7 +71,8 @@
  *
  *  @return file attribute keys or nil if error
  */
-- (NSDictionary*) fileAttributesAtPath:(NSString*)path error:(NSError**)error;
+- (nullable NSDictionary<NSFileAttributeKey, id> *) fileAttributesAtPath:(NSString*)path
+                                                                   error:(NSError**)error;
 
 @end
 
@@ -82,8 +87,8 @@
  *  @return Data read from file, or nil if there was an error.
  */
 
-- (NSData*) readDataFromFileAtPath:(NSString *)path
-                         error:(NSError**)error;
+- (nullable NSData*) readDataFromFileAtPath:(NSString*)path
+                                      error:(NSError**)error;
 
 /**
  *  Reads data from file at path.
@@ -95,10 +100,10 @@
  *
  *  @return Data read from file, or nil if there was an error. May be less than length.
  */
-- (NSData*) readDataFromFileAtPath:(NSString*)path
-                            length:(NSUInteger)length
-                            offset:(NSUInteger)offset
-                             error:(NSError**)error;
+- (nullable NSData*) readDataFromFileAtPath:(NSString*)path
+                                     length:(NSUInteger)length
+                                     offset:(NSUInteger)offset
+                                      error:(NSError**)error;
 
 /**
  *  Writes data to file at path at offset.
@@ -134,12 +139,11 @@
  *
  *  @param fileSystemPath   file path of the normal file system
  *  @param encryptedPath    file path in encrypted store
- *  @param completionQueue  queue on which the completion block will be called. Defaults to main queue.
- *  @param completion       block to be called when complete
  */
 - (BOOL) copyItemAtFileSystemPath:(NSString *)fileSystemPath
                   toEncryptedPath:(NSString *)encryptedPath
                             error:(NSError **)error;
 
-
 @end
+
+NS_ASSUME_NONNULL_END
