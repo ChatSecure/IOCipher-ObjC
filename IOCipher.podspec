@@ -18,6 +18,7 @@ Pod::Spec.new do |s|
     ss.source_files = 'IOCipher/*.{h,m}'
     ss.xcconfig = { 'OTHER_CFLAGS' => '$(inherited) -DHAVE_LIBSQLCIPHER -DSQLITE_HAS_CODEC' }
     ss.dependency 'libsqlfs/SQLCipher'
+    ss.dependency 'CocoaLumberjack'
   end
 
   s.subspec 'standard' do |ss|
@@ -27,6 +28,6 @@ Pod::Spec.new do |s|
   s.subspec 'GCDWebServer' do |ss|
     ss.source_files = 'IOCipher/GCDWebServer/*.{h,m}'
     ss.dependency 'IOCipher/common'
-    ss.dependency 'GCDWebServer/CocoaLumberjack'
+    ss.dependency 'GCDWebServer'
   end
 end

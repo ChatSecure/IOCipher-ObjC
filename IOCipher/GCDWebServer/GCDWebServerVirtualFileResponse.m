@@ -125,7 +125,7 @@ static inline NSError* GCDWebServerMakePosixError(int code) {
             }
         }
         
-        self.contentType = GCDWebServerGetMimeTypeForExtension([_path pathExtension]);
+        self.contentType = GCDWebServerGetMimeTypeForExtension([_path pathExtension], nil);
         self.contentLength = _size;
         self.lastModifiedDate = fileAttributes[NSFileModificationDate];
         //self.eTag = [NSString stringWithFormat:@"%llu/%li/%li", info.st_ino, info.st_mtimespec.tv_sec, info.st_mtimespec.tv_nsec];
