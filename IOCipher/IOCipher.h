@@ -43,6 +43,15 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (BOOL)changeKey:(NSData *)newKey oldKey:(NSData *)oldKey;
 
+/**
+ * Databases created with SQLCipher 3.0 are not compatible with SQLCipher 4.0.
+ * Setting this flag will set "PRAGMA cipher_compatibility = %i" on the current database.
+ * This must be called after the database is keyed.
+ *
+ * For more information see https://www.zetetic.net/sqlcipher/sqlcipher-api/#cipher_compatibility
+ **/
+- (BOOL)setCipherCompatibility:(NSInteger)version;
+
 @end
 
 @interface IOCipher (FileManagement)

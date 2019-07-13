@@ -42,6 +42,7 @@ static inline NSError* IOCipherPOSIXError(int code) {
             return nil;
         }
     }
+    
     return self;
 }
 
@@ -60,6 +61,10 @@ static inline NSError* IOCipherPOSIXError(int code) {
         }
     }
     return self;
+}
+
+- (BOOL) setCipherCompatibility:(NSInteger)version {
+    return sqlfs_set_cipher_compatibility(_sqlfs, version);
 }
 
 - (BOOL) changePassword:(NSString *)newPassword oldPassword:(NSString *)oldPassword
