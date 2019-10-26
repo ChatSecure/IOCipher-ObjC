@@ -31,8 +31,8 @@
 
 #import <sys/stat.h>
 
-#import "GCDWebServerFunctions.h"
-#import "GCDWebServerHTTPStatusCodes.h"
+#import <GCDWebServer/GCDWebServerFunctions.h>
+#import <GCDWebServer/GCDWebServerHTTPStatusCodes.h>
 #import "GCDWebServerVirtualFileResponse.h"
 
 #define kFileReadBufferSize (32 * 1024)

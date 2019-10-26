@@ -8,7 +8,7 @@
 
 #import "IOCipher.h"
 @import SQLCipher;
-#import "sqlfs.h"
+#import <libsqlfs/sqlfs.h>
 
 /** Switches sign on sqlfs result codes */
 static inline NSError* IOCipherPOSIXError(int code) {
