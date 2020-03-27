@@ -317,6 +317,10 @@ static inline NSError* IOCipherPOSIXError(int code) {
     return YES;
 }
 
+- (BOOL)vacuum {
+    return sqlfs_vacuum(NULL) == SQLITE_OK;
+}
+
 #pragma - mark File Copying
 
 

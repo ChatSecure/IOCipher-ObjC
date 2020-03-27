@@ -52,6 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
  **/
 - (BOOL)setCipherCompatibility:(NSInteger)version;
 
+- (BOOL)vacuum;
 @end
 
 @interface IOCipher (FileManagement)
